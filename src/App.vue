@@ -12,12 +12,23 @@
       <br>
       덱 : {{deck}}
     </div>
+<<<<<<< Updated upstream
     <others-deck 
       v-for="(d,i) in othersDeck"
       :key="i"
       :deck="d"
       @select-card="selectOthersCard"
     />
+=======
+    <textarea 
+      v-model="messages"
+      ref="chatWindow"
+      style="width:600px; height:300px; resize: none;" 
+      disabled
+    />
+    <br>
+    <input placeholder="채팅입력" @keydown.enter="sendMessage" v-model="message">
+>>>>>>> Stashed changes
   </div>
 </template>
 <script>
@@ -41,6 +52,10 @@ export default {
       deck: [],
       myId: '',
       othersDeck: [],
+      //내가 보낼 메세지
+      message:'',
+      //주고받은 전체 메세지
+      messages:''
     }
   },
   methods:{
@@ -53,6 +68,10 @@ export default {
         
         this.socket.on('broadcast', (data) => {
             this.myId = data
+        })
+        //호준 메세지 받기
+        this.socket.on('chat', (data) => {
+            this.messages += `${data}\n` //그냥 줄바꿈으로 구현
         })
 
         this.socket.on('userList', (data) => {
@@ -107,10 +126,28 @@ export default {
       this.socket=null
       this.isKing=false
       this.userList=[]
+    },
+    //호준 채팅입력
+    sendMessage(){
+      //메세지가 있을때만 (빈메세지 도배 방지)
+      if(this.message){
+        this.socket.emit('chat', `${this.socket.id} : ${this.message}`)
+        this.message=''
+      }
+    },
+    autoScroll(){
+      let chatWindow = chatWindow =this.$refs.chatWindow
+      chatWindow.scrollTop = chatWindow.scrollHeight
     }
   },
   beforeDestroy(){
     this.leave()
+  },
+  watch:{
+    //채팅을 받거나 보내거나 해서 전체 메세지가 변하면 오토스크롤 작동
+    messages(){
+      this.autoScroll()
+    }
   }
 }
 </script>
