@@ -43,7 +43,7 @@ export default {
     return{
       nowTurn: '',
       socket: '',
-      ip: '',
+      ip: '127.0.0.1',
       isKing: false,
       userList: [],
       deck: [],
@@ -82,6 +82,11 @@ export default {
           }
         });
 
+        this.socket.on('gameStart', () => {
+          // game reset
+          this.othersDeck = []
+        })
+
         this.socket.on('deck',(data)=>{
           console.log('덱', data);
           this.deck = data
@@ -100,8 +105,13 @@ export default {
         })
 
         this.socket.on('turn-end', (turn) => {
-          // turn.id 선택한 사람의 아이디
-          // turn.card 선택한 사람이 가지고있는 카드덱의 인덱스
+          console.log('turn-end',turn)
+          this.othersDeck.forEach((deck,i) => {
+            if (deck.user === turn.user) {
+              console.log(deck)
+              this.othersDeck[i].deckLength = turn.deckLength
+            }
+          })
 
         })
 
@@ -112,9 +122,14 @@ export default {
     },
     selectOthersCard(i) {
       console.log(i)
+      if (this.socket.id !== this.nowTurn) {
+        alert('내 차례가 아닙니다')
+        return false
+      }
+
       this.socket.emit('turn-select', {
-        id: this.socket.id,
-        selectCard: i
+        id: i.user,
+        selectCard: i.ci
       })
     },
     leave(){
