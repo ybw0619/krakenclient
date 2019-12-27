@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <p>나의 아이디는 {{myId}}입니다.</p>
+    <p>나의 아이디는 {{socket.id}}입니다.</p>
     <p>현재 {{nowTurn}}의 턴입니다.</p>
     <div>
       <input placeholder="아이피입력" @keydown.enter="join" v-model="ip">
@@ -39,7 +39,6 @@ export default {
       isKing: false,
       userList: [],
       deck: [],
-      myId: '',
       othersDeck: [],
     }
   },
@@ -52,7 +51,7 @@ export default {
         console.log(this.socket);
         
         this.socket.on('broadcast', (data) => {
-            this.myId = data
+          console.log(data)
         })
 
         this.socket.on('userList', (data) => {
@@ -75,7 +74,7 @@ export default {
 
         this.socket.on('others',(data)=>{
           console.log('others', data)
-          if (data.user !== this.myId) {
+          if (data.user !== this.socket.id) {
             this.othersDeck.push(data)
           }
         })
@@ -98,7 +97,7 @@ export default {
     selectOthersCard(i) {
       console.log(i)
       this.socket.emit('turn-select', {
-        id: myId,
+        id: this.socket.id,
         selectCard: i
       })
     },
