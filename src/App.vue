@@ -12,14 +12,12 @@
       <br>
       덱 : {{deck}}
     </div>
-<<<<<<< Updated upstream
     <others-deck 
       v-for="(d,i) in othersDeck"
       :key="i"
       :deck="d"
       @select-card="selectOthersCard"
     />
-=======
     <textarea 
       v-model="messages"
       ref="chatWindow"
@@ -28,7 +26,6 @@
     />
     <br>
     <input placeholder="채팅입력" @keydown.enter="sendMessage" v-model="message">
->>>>>>> Stashed changes
   </div>
 </template>
 <script>
