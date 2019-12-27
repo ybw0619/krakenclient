@@ -21,11 +21,13 @@ export default {
   },
   data(){
     return{
-      socket:'',
-      ip:'',
-      isKing:false,
-      userList:[],
-      deck:[]
+      socket: '',
+      ip: '',
+      isKing: false,
+      userList: [],
+      deck: [],
+      myId: '',
+      othersDeck: [],
     }
   },
   methods:{
@@ -37,8 +39,8 @@ export default {
         console.log(this.socket);
         
         this.socket.on('broadcast', (data) => {
-            console.log(data);
-        });
+            this.myId = data
+        })
 
         this.socket.on('userList', (data) => {
           this.userList = data
@@ -56,6 +58,13 @@ export default {
           console.log('덱', data);
           this.deck = data
           
+        })
+
+        this.socket.on('others',(data)=>{
+          console.log('others', data)
+          if (data.user !== this.myId) {
+            this.othersDeck.push(data)
+          }
         })
 
       }
