@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <p>나의 아이디는 {{socket.id}}입니다.</p>
+    <p>나의 역활은 {{myRole}}입니다.</p>
     <p>현재 {{nowTurn}}의 턴입니다.</p>
     <div>
       <input placeholder="아이피입력" @keydown.enter="join" v-model="ip">
@@ -42,6 +43,7 @@ export default {
   data(){
     return{
       nowTurn: '',
+      myRole: '',
       socket: '',
       ip: '127.0.0.1',
       isKing: false,
@@ -85,6 +87,11 @@ export default {
         this.socket.on('gameStart', () => {
           // game reset
           this.othersDeck = []
+        })
+
+        this.socket.on('role', role => {
+          // game reset
+          this.myRole = role
         })
 
         this.socket.on('deck',(data)=>{
