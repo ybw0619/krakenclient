@@ -1,5 +1,7 @@
 <template>
   <div id="app">
+    <p>나의 아이디는 {{myId}}입니다.</p>
+    <p>현재 {{nowTurn}}의 턴입니다.</p>
     <div>
       <input placeholder="아이피입력" @keydown.enter="join" v-model="ip">
       <button @click="join">입력</button>
@@ -10,17 +12,28 @@
       <br>
       덱 : {{deck}}
     </div>
-    
+    <others-deck 
+      v-for="(d,i) in othersDeck"
+      :key="i"
+      :deck="d"
+      @select-card="selectOthersCard"
+    />
   </div>
 </template>
 <script>
 import io from 'socket.io-client';
+import OthersDeck from '@/components/OthersDeck'
+
 export default {
+  components: {
+    OthersDeck
+  },
   mounted(){
     
   },
   data(){
     return{
+      nowTurn: '',
       socket: '',
       ip: '',
       isKing: false,
@@ -67,10 +80,27 @@ export default {
           }
         })
 
+        this.socket.on('turn-start', (id) => {
+          this.nowTurn = id
+        })
+
+        this.socket.on('turn-end', (turn) => {
+          // turn.id 선택한 사람의 아이디
+          // turn.card 선택한 사람이 가지고있는 카드덱의 인덱스
+
+        })
+
       }
     },
     gameStart(){
       this.socket.emit('gameStart','start')
+    },
+    selectOthersCard(i) {
+      console.log(i)
+      this.socket.emit('turn-select', {
+        id: myId,
+        selectCard: i
+      })
     },
     leave(){
       this.socket.close()
